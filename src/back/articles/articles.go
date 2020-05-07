@@ -1,31 +1,45 @@
 package articles
 
-import (
-)
-
-
-type Content struct {
-	Data
-}
-
-type  Reference interface {
+// Contents - content reference table
+type Contents interface {
 	Name() string
+	DataID() string
+	Children() []Contents
 }
 
-// Contents type represents articles tree
-type Contents struct {
-	Name string `json:"Name"`
-	Articles []Article `json:"Articles"`
-	Children []Contents `json:"Children"`
+// Article - article data
+type Article interface {
+	Data() string
 }
 
-// Article type represent single article data
-type Article struct {
-	Id int			`json:"Id"`
-	Name string 	`json:"Name"`
-	Data *string 	`json:"Data"`
+// Articles set of articles stored by ID
+type Articles map[string]Article
+
+type contents struct {
+	N  string     `json:"name"`
+	D  string     `json:"dataId"`
+	Ch []contents `json:"contents"`
 }
 
-func ScanFiles(path string) {
+func (cnts contents) Name() string {
+	return cnts.N
+}
+func (cnts contents) DataID() string {
+	return cnts.D
+}
+func (cnts contents) Children() []Contents {
+	children := make([]Contents, len(cnts.Ch))
+	for i, e := range cnts.Ch {
+		children[i] = e
+	}
+	return children
+}
 
+type article struct {
+	ID string `json:"id"`
+	D  string `json:"data"`
+}
+
+func (art article) Data() string {
+	return art.D
 }
